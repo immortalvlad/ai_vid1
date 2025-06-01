@@ -1,4 +1,5 @@
 const container = document.getElementById('video-container');
+let updateTimeout
 document.getElementById('load-folder').addEventListener('click', async () => {
     const videos = await window.electronAPI.selectFolder();
     container.innerHTML = '';
@@ -14,16 +15,19 @@ document.getElementById('load-folder').addEventListener('click', async () => {
         let interval;
 
         wrapper.addEventListener('mousemove', (e) => {
-            const rect = wrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percent = x / rect.width;
+            console.log('mousemove', e);
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(() => {
+                console.log('mousemove action');
+                const rect = wrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percent = x / rect.width;
 
-            if (video.duration) {
-                video.requestVideoFrameCallback(() => {
+                if (video.duration) {
+                    // video.pause();
                     video.currentTime = percent * video.duration;
-                })
-                // video.currentTime = percent * video.duration;
-            }
+                }
+            }, 50); // 50 мс задержка
         });
 
         wrapper.addEventListener('mouseenter', () => {
