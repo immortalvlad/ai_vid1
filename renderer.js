@@ -40,7 +40,32 @@ document.getElementById('load-folder').addEventListener('click', async () => {
             video.currentTime = 0;
         });
 
+        wrapper.addEventListener('click', () => {
+            const popupVideo = document.getElementById('popup-video');
+            popupVideo.src = video.src;
+            popupVideo.currentTime = video.currentTime;
+            popupVideo.play();
+            popup.style.display = 'flex';
+        });
+
         wrapper.appendChild(video);
         container.appendChild(wrapper);
     });
+});
+
+const popup = document.createElement('div');
+popup.id = 'video-popup';
+popup.innerHTML = `
+  <div class="popup-overlay"></div>
+  <div class="popup-content">
+    <button id="close-popup">✖</button>
+    <video id="popup-video" controls autoplay></video>
+  </div>
+`;
+document.body.appendChild(popup);
+
+// Закрытие попапа
+document.getElementById('close-popup').addEventListener('click', () => {
+    document.getElementById('popup-video').pause();
+    popup.style.display = 'none';
 });
