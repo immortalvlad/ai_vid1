@@ -7,15 +7,16 @@ function CustomTimeline({ videoRef }) {
     const timelineRef = useRef(null);
     const previewVideoRef = useRef(null);
     const canvasRef = useRef(null);
-    const isDragging = useRef(false);
+    const [isDragging, setIsDragging] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [previewPos, setPreviewPos] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
+        console.log('CustomTimeline mounted');
         if (!videoRef.current) return;
 
         const updateProgress = () => {
-            if (!isDragging.current) {
+            if (!isDragging) {
                 const current = videoRef.current.currentTime;
                 const duration = videoRef.current.duration || 1;
                 setProgress((current / duration) * 100);
@@ -40,15 +41,18 @@ function CustomTimeline({ videoRef }) {
     };
 
     const onMouseDown = (e) => {
-        isDragging.current = true;
+        setIsDragging(true);
         seek(e);
 
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseup', onMouseUp);
+        // window.addEventListener('mousemove', onMouseMove);
+        // window.addEventListener('mouseup', onMouseUp);
     };
 
     const onMouseMove = (e) => {
         // if (!timelineRef.current || !videoRef.current || !previewVideoRef.current || !canvasRef.current) return;
+        if (isDragging) {
+            seek(e);
+        }
 
         const rect = timelineRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -86,9 +90,8 @@ function CustomTimeline({ videoRef }) {
     };
 
     const onMouseUp = (e) => {
-        if (isDragging.current) {
-            seek(e);
-            isDragging.current = false;
+        if (isDragging) {
+            setIsDragging(false);
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseup', onMouseUp);
         }
@@ -130,6 +133,7 @@ function CustomTimeline({ videoRef }) {
                 ref={timelineRef}
                 onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
                 onMouseLeave={onMouseLeave}
                 style={{ userSelect: 'none' }}
             >
